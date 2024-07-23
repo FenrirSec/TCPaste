@@ -20,7 +20,7 @@ Welcome to **TCPaste**, a single binary, self-hosted file server written in Rust
 
 ## 📝 Installation
 
-1. **Download the Binary**: [Download the latest release](#) or build from source.
+1. **Download the Binary**: [Download the latest release](https://github.com/FenrirSec/TCPaste/releases/) or build from source `cargo build`.
 2. **Run the Server**:
    ```bash
    ./tcpaste
