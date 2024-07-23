@@ -41,7 +41,9 @@ The HTTP server will listen on port 80, and the ingress TCP server will listen o
 
 ## ⚠️ Security Notes
 
-**This project comes under absolutely no security guarantee**. The HTTP endpoint should not be exposed to the internet, but only face your internal network and be accessible only to you and your collaborators.
+**This project comes under absolutely no security guarantee**. It is a small tool we use internally and you must make sure you fully understand what it is before using it!
+
+The HTTP endpoint should not be exposed to the internet, but only face your internal network and be accessible only to you and your collaborators.
 
 ## 🧩 License
 
