@@ -47,7 +47,6 @@ fn handle_tcp_connection(mut stream: TcpStream, files_dir: Arc<Mutex<()>>) {
 
                 let _lock = files_dir.lock().unwrap();
                 file.write_all(content.as_bytes()).unwrap();
-                eprintln!("Wrote to {}", file_path);
             }
             Err(ref e) if e.kind() == ErrorKind::WouldBlock => {
                 eprintln!("Connection timed out, closing stream");
@@ -59,6 +58,7 @@ fn handle_tcp_connection(mut stream: TcpStream, files_dir: Arc<Mutex<()>>) {
             }
         }
     }
+    eprintln!("Wrote to {}", file_path);
 }
 
 fn handle_http_connection(mut stream: TcpStream) {
