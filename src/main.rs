@@ -7,10 +7,11 @@ use std::time::Duration;
 use rand::Rng;
 use std::path::{Path};
 use std::io::ErrorKind;
+use std::env;
 
-const HOST: &str = "127.0.0.1";
-const TCP_PORT: u16 = 8888;
-const HTTP_PORT: u16 = 80;
+const DEFAULT_HOST: &str = "127.0.0.1";
+const DEFAULT_TCP_PORT: u16 = 8888;
+const DEFAULT_HTTP_PORT: u16 = 80;
 const TIMEOUT_DURATION: Duration = Duration::from_secs(10);
 const FILES_DIR: &str = "files";
 
@@ -129,7 +130,33 @@ fn handle_http_connection(mut stream: TcpStream) {
     }
 }
 
+fn print_help() {
+    println!("Usage: program_name [host] [tcp_port] [http_port]");
+    println!();
+    println!("Arguments:");
+    println!("  -h, --help          Show this help message.");
+    println!("  host                IP address to bind (default: 127.0.0.1).");
+    println!("  tcp_port            Port for the TCP server (default: 8888).");
+    println!("  http_port           Port for the HTTP server (default: 80).");
+}
+
 fn main() {
+    // Retrieve host and ports from command line arguments
+    let args: Vec<String> = env::args().collect();
+
+    // Check if help flag is present
+    if args.len() > 1 && (args[1] == "-h" || args[1] == "--help") {
+        print_help();
+        return;
+    }
+
+    // Create a variable for the default host to ensure it has the correct lifetime
+    let default_host = DEFAULT_HOST.to_string();
+    let host = args.get(1).unwrap_or(&default_host);
+
+    let tcp_port = args.get(2).map_or(DEFAULT_TCP_PORT, |port| port.parse().unwrap_or(DEFAULT_TCP_PORT));
+    let http_port = args.get(3).map_or(DEFAULT_HTTP_PORT, |port| port.parse().unwrap_or(DEFAULT_HTTP_PORT));
+
     // Ensure the "files" directory exists
     let _ = std::fs::create_dir(FILES_DIR);
 
@@ -137,8 +164,9 @@ fn main() {
 
     let tcp_files_dir = Arc::clone(&files_dir);
 
-    let tcp_listener = TcpListener::bind((HOST, TCP_PORT)).unwrap();
-    eprintln!("TCP Server listening on {}:{}", HOST, TCP_PORT);
+    // Start TCP server
+    let tcp_listener = TcpListener::bind((host.as_str(), tcp_port)).unwrap();
+    eprintln!("TCP Server listening on {}:{}", host, tcp_port);
 
     thread::spawn(move || {
         for stream in tcp_listener.incoming() {
@@ -150,8 +178,9 @@ fn main() {
         }
     });
 
-    let http_listener = TcpListener::bind((HOST, HTTP_PORT)).unwrap();
-    eprintln!("HTTP Server listening on {}:{}", HOST, HTTP_PORT);
+    // Start HTTP server
+    let http_listener = TcpListener::bind((host.as_str(), http_port)).unwrap();
+    eprintln!("HTTP Server listening on {}:{}", host, http_port);
 
     for stream in http_listener.incoming() {
         let stream = stream.unwrap();
